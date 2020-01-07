@@ -32,7 +32,7 @@ const blogSchema = new mongoose.Schema(
             type: String
         },
         photo: {
-            data: Buffer, //Photos will be saved as a Biniary data format in the database
+            data: Buffer, //Photos will be saved as a Biniary data format in the database       
             contentType: String
         },
         categories: [{ type: ObjectId, ref: 'Category', required: true }],
