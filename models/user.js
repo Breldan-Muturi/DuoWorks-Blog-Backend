@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {     //We'll be having a role based authentication system
           type: Number,
-          trim: true
+          default: 0
         },
         photo: {
           data: Buffer, //Photos will be saved as a Biniary data format in the database

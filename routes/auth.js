@@ -11,10 +11,10 @@ router.post('/signin', userSigninValidator, runValidation, signin);
 router.get('/signout', signout);
 
 //test
-router.get('/secret', requireSignin, (req, res) => {
-    res.json({
-        message: 'You have access to secret page'
-    });
-});
+// router.get('/secret', requireSignin, authMiddleware, (req, res) => {
+//     res.json({
+//         user: req.user  //Makes the user available in the request object
+//     });
+// });
 
 module.exports = router;

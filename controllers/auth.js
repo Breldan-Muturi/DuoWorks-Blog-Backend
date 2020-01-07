@@ -2,7 +2,6 @@ const User = require('../models/user');
 const shortId = require('shortid');
 const jwt  =  require('jsonwebtoken');
 const expressJwt =require('express-jwt'); //Check whether the token has expired or is valid. Before we generate a token we need to create a secret key in the .env
-
 exports.signup = (req, res) => {
     //console.log(req.body);
     User.findOne({ email: req.body.email }).exec((err, user) => { //Check if a user exists.We dont add user if email exists
@@ -27,7 +26,7 @@ exports.signup = (req, res) => {
                 // user: success
             // });
             res.json({
-                message: 'Signup success! Please signin.'
+                message: 'Sign up success! Please signin'
             });
         });
     });
@@ -70,3 +69,35 @@ exports.signout = (req,res) => {
 exports.requireSignin = expressJwt({ //We apply this middleware in our routes so any routes we want to protect only for the logged in users it will check the incoming token's secret and compare with the secret we passed here
     secret: process.env.JWT_SECRET //If the tokens match and the token hasnt expired this returns true and user is granted access
 });
+
+exports.authMiddleware = (req, res, next) => {
+    const authUserId = req.user._id
+    User.findById({_id: authUserId}).exec((err, user) =>{
+        if(err || !user) {
+            return res.status(400).json({
+                error: 'User not found'
+            })
+        }
+        req.profile = user
+        next()
+    })
+}
+
+exports.adminMiddleware = (req, res, next) => {
+    const adminUserId = req.user._id;
+    User.findById({_id: adminUserId}).exec((err, user) =>{
+        if(err || !user) {
+            return res.status(400).json({
+                error: 'User not found'
+            });
+        }
+        //The role separates the ordinary user from the admin user
+        if(user.role !== 1) {
+            return res.status(400).json({
+                error: 'Admin resource. Access denied'
+            });
+        } 
+        req.profile = user;
+        next();
+    });
+};
