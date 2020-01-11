@@ -263,6 +263,24 @@ exports.photo = (req,res) => {
             }
             res.set('Content-Type', blog.photo.contentType);
             return res.send(blog.photo.data);
-        })
-}
+        });
+};
+
+exports.listRelated = (req, res) => {
+    let limit = req.body.limit ? parseInt(req.body.limit) : 3; // You can change how many related blogs you want to show from here
+    const {_id, categories} = req.body.blog;
+
+    Blog.find({_id: {$ne: _id}, categories: {$in: categories}})
+    .limit(limit)
+    .populate('postedBy', '_id name profile')
+    .select('title slug excerpt postedBy createdBy updatedAt')
+    .exec((err, blogs) => {
+        if(err) {
+            return res.status(400).json({
+                error: 'Blogs not found'
+            });
+        }
+        res.json(blogs);
+    });
+};
     
