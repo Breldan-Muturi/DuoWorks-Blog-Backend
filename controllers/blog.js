@@ -283,4 +283,21 @@ exports.listRelated = (req, res) => {
         res.json(blogs);
     });
 };
+
+exports.listSearch = (req,res) => { //We want our search based on the tilte or body
+    console.log(req.query);
+    const {search} = req.query;
+    if (search) {
+        Blog.find({
+            $or: [{title: {$regex: search, $options: 'i'}}, {body: {$regex: search, $options: 'i'}}]
+        }, (err, blogs) => {
+            if(err){
+                return res.status(400).json({
+                    error: errorHandler(err)
+                });
+            }
+            res.json(blogs);
+        }).select('-photo -body'); //We deselect photo and body because these are huge files when you consiedr searching
+    }
+};
     
