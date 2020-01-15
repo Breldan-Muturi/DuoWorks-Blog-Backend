@@ -1,6 +1,7 @@
 const Blog = require('../models/blog');
 const Category = require('../models/category');
 const Tag = require('../models/tag');
+const User = require('../models/user');
 const formidable = require('formidable');//This package handles Form data
 const slugify = require('slugify');// Slugify data
 const stripHtml = require('string-strip-html');//This strips the HTML so that we can get an excerpt for our blogs
@@ -272,7 +273,7 @@ exports.listRelated = (req, res) => {
 
     Blog.find({_id: {$ne: _id}, categories: {$in: categories}})
     .limit(limit)
-    .populate('postedBy', '_id name profile')
+    .populate('postedBy', '_id username profile')
     .select('title slug excerpt postedBy createdBy updatedAt')
     .exec((err, blogs) => {
         if(err) {
@@ -299,5 +300,29 @@ exports.listSearch = (req,res) => { //We want our search based on the tilte or b
             res.json(blogs);
         }).select('-photo -body'); //We deselect photo and body because these are huge files when you consiedr searching
     }
+};
+
+exports.listByUser = (req, res) => {
+    User.findOne({ username: req.params.username }).exec((err, user) => {
+        if (err) {
+            return res.status(400).json({
+                error: errorHandler(err)
+            });
+        }
+        let userId = user._id;
+        Blog.find({ postedBy: userId })
+            .populate('categories', '_id name slug')
+            .populate('tags', '_id name slug')
+            .populate('postedBy', '_id name username')
+            .select('_id title slug postedBy createdAt updatedAt')
+            .exec((err, data) => {
+                if (err) {
+                    return res.status(400).json({
+                        error: errorHandler(err)
+                    });
+                }
+                res.json(data);
+            });
+    });
 };
     
