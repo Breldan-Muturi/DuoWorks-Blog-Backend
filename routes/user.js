@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {requireSignin, authMiddleware, adminMiddleware} = require('../controllers/auth');
-const {read, publicProfile, update, photo} = require('../controllers/user');
+const { requireSignin, authMiddleware, adminMiddleware } = require('../controllers/auth');
+const { read, publicProfile, update, photo } = require('../controllers/user');
 
 router.get('/user/profile', requireSignin, authMiddleware, read);
 router.get('/user/:username', publicProfile);
