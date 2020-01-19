@@ -32,7 +32,6 @@ exports.list = (req,res) => {
 
 exports.read = (req, res) => {
     const slug = req.params.slug.toLowerCase();
-
     Category.findOne({slug}).exec((err, category) => {
         if(err){
             return res.status(400).json({
@@ -43,7 +42,7 @@ exports.read = (req, res) => {
          Blog.find({categories: category})
             .populate('categories', '_id name slug')
             .populate('tags', '_id name slug')
-            .populate('postedBy', '_id name')
+            .populate('postedBy', '_id name username')
             .select('_id total slug excerpt categories postedBy tags createdAt updatedAt')
             .exec((err, data) => {
                 if(err) {

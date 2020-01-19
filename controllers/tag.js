@@ -43,7 +43,7 @@ exports.read = (req, res) => {
          Blog.find({tags: tag})
          .populate('categories', '_id name slug')
          .populate('tags', '_id name slug')
-         .populate('postedBy', '_id name')
+         .populate('postedBy', '_id name username')
          .select('_id total slug excerpt categories postedBy tags createdAt updatedAt')
          .exec((err, data) => {
              if(err) {
